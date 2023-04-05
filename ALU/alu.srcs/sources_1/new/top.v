@@ -12,7 +12,8 @@ module top(clk_100M,rst_,clk_A,clk_B,clk_F,load,data_in,choose_out,choose_in,ALU
     output [7:0]AN;
     
     reg [31:0]A_input,B_input;
-    wire [31:0]out,A,B,F,FR;
+    reg [31:0]out;
+    wire [31:0]A,B,F;
 
     BigALU alu(ALU_OP,A_input,B_input,rst_,clk_A,clk_B,clk_F,A,B,F,FR);
     scan_data show(rst_,out,clk_100M,AN,seg);
@@ -50,6 +51,8 @@ module top(clk_100M,rst_,clk_A,clk_B,clk_F,load,data_in,choose_out,choose_in,ALU
             case(choose_out)
                 2'b00:out <= A_input;
                 2'b01:out <= B_input;
+                2'b10:out <= F;
+                2'b11:out <= {28'b0,FR};
             endcase
         end
     end

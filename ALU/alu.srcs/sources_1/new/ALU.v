@@ -4,23 +4,20 @@ module ALU(OP,A,B,F,ZF,SF,CF,OF);
     input [3:0]OP;
     input [31:0]A,B;
     output reg[31:0]F;
-    output reg CF,OF;
-    output wire ZF,SF;
+    output CF,OF,ZF,SF;
 
     integer i;
     reg C1,C2;
     assign ZF = F ? 0 : 1;
     assign SF = F[31];
+    assign OF = A[31] ^ B[31] ^ C1 ^ F[31];
+    assign CF = OP == 4'b0000 ? C1 : OP == 4'b1000 ? ~C1 : 0;
     always @(*)
     begin
-        OF = 0;
-        CF = 0;
         case(OP)
             4'b0000:
             begin
                 {C1,F} = {1'b0,A} + {1'b0,B};
-                CF = C1;
-                OF = A[31] ^ B[31] ^ C1 ^ F[31];
             end
             4'b0001: F = A << B;
             4'b0010: F = $signed(A) < $signed(B) ? 1 : 0;
@@ -32,8 +29,6 @@ module ALU(OP,A,B,F,ZF,SF,CF,OF);
             4'b1000:
             begin
                 {C1,F} = {1'b0,A} - {1'b0,B};
-                CF = ~C1;
-                OF = A[31] ^ B[31] ^ C1 ^ F[31];
             end
             4'b1101: 
             begin
@@ -43,6 +38,7 @@ module ALU(OP,A,B,F,ZF,SF,CF,OF);
             end
             default:F=0;
         endcase
+
     end
 
 endmodule
