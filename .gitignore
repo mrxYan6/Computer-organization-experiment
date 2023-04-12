@@ -3,8 +3,13 @@ ALU/alu.ip_user_files
 ALU/alu.hw
 ALU/alu.hbs
 ALU/alu.cache
-
 ALU/alu.runs
 ALU/alu.ioplanning
-vivado pro
-yyz实验报告
+
+RegisterFile/RegisterFile.sim
+RegisterFile/RegisterFile.ip_user_files
+RegisterFile/RegisterFile.hw
+RegisterFile/RegisterFile.hbs
+RegisterFile/RegisterFile.cache
+RegisterFile/RegisterFile.runs
+RegisterFile/RegisterFile.ioplanning

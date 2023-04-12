@@ -13,5 +13,5 @@ module BigALU(ALU_OP,Data_A,Data_B,rst_,clk_A,clk_B,clk_F,A,B,F,FR);
     Register RB(clk_B,rst_,Data_B,B);
     ALU alu(ALU_OP,A,B,res,ZF,SF,CF,OF);
     Register RF(clk_F,rst_,res,F);
-    Register flag_register(clk_F,rst_,{28'b0,ZF,SF,CF,OF},{28'b0,FR});
+    Register flag_register(clk_F,rst_,{28'b0,ZF,SF,CF,OF},FR);
 endmodule
