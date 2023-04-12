@@ -11,7 +11,7 @@ module ALU(OP,A,B,F,ZF,SF,CF,OF);
     assign ZF = F ? 0 : 1;
     assign SF = F[31];
     assign OF = A[31] ^ B[31] ^ C1 ^ F[31];
-    assign CF = OP == 4'b0000 ? C1 : OP == 4'b1000 ? ~C1 : 0;
+    assign CF = C1;
     always @(*)
     begin
         case(OP)
