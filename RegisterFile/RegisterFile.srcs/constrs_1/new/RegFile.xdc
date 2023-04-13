@@ -75,8 +75,8 @@ set_property PACKAGE_PIN R6 [get_ports {FR[0]}]
 
 set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets clk_F_IBUF]
 set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets rst__IBUF]
-set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets Reg_Write_IBUF]
-set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets Reg_Write_IBUF]
+#set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets _Write_IBUF]
+set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets clk_Write_IBUF]
 set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets clk_Read_IBUF]
 
 set_property PACKAGE_PIN E3 [get_ports clk_100M]
