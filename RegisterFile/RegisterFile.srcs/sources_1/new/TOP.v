@@ -1,0 +1,40 @@
+`timescale 1ns / 1ps
+module TOP(A_addr,B_addr,W_Addr,ALU_OP,Reg_Write,clk_100M,rst_,clk_Read,clk_F,clk_Write,AN,Seg,FR);
+    input [4:0]A_addr,B_addr,W_Addr;
+    input [3:0]ALU_OP;
+    input Reg_Write,clk_100M;
+    input rst_,clk_Read,clk_F,clk_Write;
+    output [7:0]AN;
+    output [7:0]Seg;
+    output [3:0]FR;
+
+
+    wire [31:0]Reg_A,Reg_B;
+    wire [31:0]A,B,F;
+
+    Register_File rgf(
+        .rst_(rst_),
+        .data_write(F),
+        .Reg_Write(Reg_Write),
+        .clk_W(clk_Write),
+        .A_addr(A_addr),
+        .B_addr(B_addr),
+        .W_addr(W_Addr),
+        .A_out(Reg_A),
+        .B_out(Reg_B));
+    
+    BigALU alu(
+        .ALU_OP(ALU_OP),
+        .Data_A(Reg_A),
+        .Data_B(Reg_B),
+        .rst_(rst_),
+        .clk_A(clk_Read),
+        .clk_B(clk_Read),
+        .clk_F(clk_F),
+        .A(A),
+        .B(B),
+        .F(F),
+        .FR(FR));
+
+    scan_data tube(rst_,Reg_A,clk_100M,AN,Seg);
+endmodule
