@@ -14,15 +14,16 @@ module Register_File(data_write,Reg_Write,rst_,clk_W,A_addr,B_addr,W_addr,A_out,
     integer i;
     
     always @(negedge rst_ or negedge clk_W) begin
-        if(!rst_)begin
+        if(!rst_)begin                                                                  //初始化
             Reg_Files[0] <= 32'h0000_0000;
-            for(i = 1; i < 32; i = i + 1) Reg_Files[i] <= 32'd2;
+            for(i = 1; i < 32; i = i + 1) Reg_Files[i] <= 32'h0000_0001;
             Reg_Files[7] <= 32'h0000_0007;
             Reg_Files[8] <= 32'hf7f7_f7f7;
             Reg_Files[9] <= 32'h37f7_f7f7;
+            Reg_Files[29] <= 32'h8000_0002;
             Reg_Files[30] <= 32'hffff_ffff;
             Reg_Files[31] <= 32'h7fff_ffff;
-        end else if(Reg_Write && W_addr != 5'd0)Reg_Files[W_addr] <= data_write;
+        end else if(Reg_Write && W_addr != 5'd0)Reg_Files[W_addr] <= data_write;        //地址非0时写入
         
     end
 

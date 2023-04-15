@@ -1,5 +1,5 @@
 `timescale 1ns / 1ps
-module BigBigALU(A_addr,B_addr,W_Addr,ALU_OP,Reg_Write,clk_100M,rst_,clk_Read,clk_F,clk_Write,F,FR);
+module BigBigALU(A_addr,B_addr,W_Addr,ALU_OP,Reg_Write,clk_100M,rst_,clk_Read,clk_F,clk_Write,F,FR);   //链接寄存器堆和ALU
     input [4:0]A_addr,B_addr,W_Addr;
     input [3:0]ALU_OP;
     input Reg_Write,clk_100M;
@@ -34,7 +34,7 @@ endmodule
 
 
 
-module TOP(A_addr,B_addr,W_Addr,ALU_OP,Reg_Write,clk_100M,rst_,clk_Read,clk_F,clk_Write,AN,Seg,FR);
+module TOP(A_addr,B_addr,W_Addr,ALU_OP,Reg_Write,clk_100M,rst_,clk_Read,clk_F,clk_Write,AN,Seg,FR); //顶层模块
     input [4:0]A_addr,B_addr,W_Addr;
     input [3:0]ALU_OP;
     input Reg_Write,clk_100M;
