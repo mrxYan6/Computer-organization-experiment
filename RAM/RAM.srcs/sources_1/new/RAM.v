@@ -108,7 +108,7 @@ module top(clr,clk_100Mhz,clk_DM,DM_Addr,DM_Write,Data_selector,Seg,AN,siz,SE_s)
 
     scan_data tube(
         .reset(clr),
-        .data(data_show),
+        .data(RAM_out),
         .clk(clk_100Mhz),
         .AN(AN),
         .seg(Seg)
