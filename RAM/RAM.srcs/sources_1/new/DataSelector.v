@@ -13,7 +13,7 @@ module DataSelector(select,out);
             4: out = 32'b0;
             5: out = 32'h0aaaaaaa;
             6: out = 32'h5;
-            7: out = 32'h11119999;
+            7: out = 32'h11223344;
         endcase
     end
 
