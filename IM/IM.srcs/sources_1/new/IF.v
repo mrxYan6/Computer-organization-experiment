@@ -22,13 +22,6 @@ module IF(rst_,IR_Write, PC_Write, clk_im, pc, ir);
         .addra(pc[7:2]),  // input wire [5 : 0] addra
         .douta(inst_code)  // output wire [31 : 0] douta
     );
-//     (
-//   .clka(clka),    // input wire clka
-//   .ena(ena),      // input wire ena
-//   .addra(addra),  // input wire [5 : 0] addra
-//   .douta(douta)  // output wire [31 : 0] douta
-// );
-
 
     Reg IR (
         .clk(clk_im),
