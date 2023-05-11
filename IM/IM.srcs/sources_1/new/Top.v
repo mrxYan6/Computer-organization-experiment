@@ -1,8 +1,8 @@
 `timescale 1ns / 1ps
 
 // IF(IR_Write, PC_Write, clk_im, pc, ir, rs1, rs2, rd, opcode, func3, func7, imm)
-module TOP(IR_Write, PC_Write, clk_100m, switch, AN, Seg, Led)
-    input IR_Write, PC_Write, clk_100m;
+module TOP(rst_, IR_Write, PC_Write, clk_100m, clk_im, switch, AN, Seg, Led);
+    input rst_, IR_Write, PC_Write, clk_100m, clk_im;
     input [2:0]switch;
     output [7:0]AN;
     output [7:0]Seg;
@@ -15,13 +15,21 @@ module TOP(IR_Write, PC_Write, clk_100m, switch, AN, Seg, Led)
     wire [2:0]func3;
     wire [6:0]func7;
     wire [31:0]imm;
+    
+    
 
     IF if1(
+        .rst_(rst_),
         .IR_Write(IR_Write),
         .PC_Write(PC_Write),
-        .clk_im(clk_100m),
+        .clk_im(clk_im),
         .pc(pc),
-        .ir(ir),
+        .ir(ir)
+    );
+
+    
+    ID1 id1(
+        .inst(ir),
         .rs1(rs1),
         .rs2(rs2),
         .rd(rd),
@@ -35,18 +43,18 @@ module TOP(IR_Write, PC_Write, clk_100m, switch, AN, Seg, Led)
 
     always @(*) begin
         case(switch[2])
-            0: Led = {rs1,rs2,rd};
+            0: Led = {rd,rs1,rs2,2'b0};
             1: Led = {opcode,func3,func7};
         endcase
     end
 
     always @(*) begin
-        case(sw[1:0])
+        case(switch[1:0])
             0: data_tube = imm;
             1: data_tube = pc;
             2: data_tube = ir;
         endcase
     end
 
-    scan_data(1'b1,data_tube,clk_100m,AN,Seg);
+    scan_data(rst_,data_tube,clk_100m,AN,Seg);
 endmodule
