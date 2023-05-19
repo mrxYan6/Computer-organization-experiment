@@ -1,10 +1,10 @@
 `timescale 1ns / 1ps
 
-module ID1(inst, rs1, rs2, rd, opcode, func3, func7, imm);
+module ID1(inst, rs1, rs2, rd, opcode, fun3, func7, imm);
     input [31:0]inst;
     output [4:0]rs1, rs2, rd;
     output [6:0]opcode;
-    output [2:0]func3;
+    output [2:0]fun3;
     output [6:0]func7;
     output reg[31:0]imm;
 
@@ -13,7 +13,7 @@ module ID1(inst, rs1, rs2, rd, opcode, func3, func7, imm);
     assign func7 = inst[31:25];
     assign rs2 = inst[24:20];
     assign rs1 = inst[19:15];
-    assign func3 = inst[14:12];
+    assign fun3 = inst[14:12];
     assign rd = inst[11:7];
     assign opcode = inst[6:0];
 
@@ -22,7 +22,7 @@ module ID1(inst, rs1, rs2, rd, opcode, func3, func7, imm);
     assign S_imm = {{20{inst[31]}}, inst[31:25], inst[11:7]};
     // assign B_imm = {{20{inst[31]}}, inst[7], inst[30:25], inst[11:8],1'b0};
     assign B_imm = {{20{inst[31]}}, inst[7], inst[30:25], inst[11:8], 1'b0};
-    assign U_imm = {inst[31:12], 12'b0};
+    assign U_imm = {inst[31:12],{ 12{0}}};
     assign J_imm = {{12{inst[31]}}, inst[19:12], inst[20], inst[30:21], 1'b0};
     assign CSR_uimm = {27'b0,inst[19:15]};
 
@@ -38,7 +38,6 @@ module ID1(inst, rs1, rs2, rd, opcode, func3, func7, imm);
             7'b1100111: type = 4'd2;
             //U
             7'b0010111: type = 4'd3;
-            7'b0110111: type = 4'd3;
             //S
             7'b0100011: type = 4'd4;
             //B
@@ -56,11 +55,7 @@ module ID1(inst, rs1, rs2, rd, opcode, func3, func7, imm);
             //R
             4'd1:imm = 32'b0;
             //I
-            4'd2:begin
-                // imm = (fun3 == 3 || func3 == 1) ? I_shift : I_imm;
-                if(func3 == 3 || func3 == 1) imm = I_shift;
-                else imm = I_imm;
-            end
+            4'd2:imm = (fun3 == 3 || func3 == 1) ? I_shift : I_imm;
             //U
             4'd3:imm = U_imm;
             //S
