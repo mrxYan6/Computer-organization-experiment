@@ -6,7 +6,7 @@ module CU(rst_, clk, opcode, func3, func7, CF, OF, ZF, SF, ALU_OP, PC_Write, PC0
     input [2:0] func3;
     input [6:0] func7;
     input CF, OF, ZF, SF;
-    output reg[3:0] ALU_OP;
+    output [3:0] ALU_OP;
     output reg PC_Write, PC0_Write, IR_Write, Reg_Write, Mem_write;
     output reg SE_s;
     output reg [1:0] Size_s;
@@ -35,7 +35,7 @@ module CU(rst_, clk, opcode, func3, func7, CF, OF, ZF, SF, ALU_OP, PC_Write, PC0
         .ALU_OP(ALU_OP)
     );
 
-    wire cc;
+    reg cc;
     // generate cc
     always @(*) begin
         if (IS_B) begin
@@ -110,7 +110,7 @@ module CU(rst_, clk, opcode, func3, func7, CF, OF, ZF, SF, ALU_OP, PC_Write, PC0
     end
 
     // generate signals 
-    always @(posedge cl k or negedge rst_) begin
+    always @(posedge clk or negedge rst_) begin
         if(!rst_) begin
             {PC_Write, PC0_Write, IR_Write,Reg_Write, Mem_write} <= 5'b0;
             SE_s <= 1'b0;
