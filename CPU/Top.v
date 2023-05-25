@@ -57,7 +57,7 @@ module TOP(rst_, clk, switch, AN, Seg, Led);
     assign pc_in = (PC_s == 0) ? pc + 4 : (PC_s == 1) ? pc0 + imm : 32'h0000_0000;
 
     Register PC(
-        .clk(clk),
+        .clk(~clk),
         .rst_(rst_),
         .Reg_write(PC_Write),
         .Data_in(pc_in),
@@ -65,7 +65,7 @@ module TOP(rst_, clk, switch, AN, Seg, Led);
     );
 
     Register PC0(
-        .clk(clk),
+        .clk(~clk),
         .rst_(rst_),
         .Reg_write(PC0_Write),
         .Data_in(pc),
@@ -75,14 +75,14 @@ module TOP(rst_, clk, switch, AN, Seg, Led);
     wire [31:0]inst_code;
 
     ROM IM (
-        .clka(~clk),    // input wire clka
+        .clka(clk),    // input wire clka
         .addra(pc[7:2]),  // input wire [5 : 0] addra
         .douta(inst_code)  // output wire [31 : 0] douta
     );
 
 
     Register IR (
-        .clk(clk),
+        .clk(~clk),
         .rst_(rst_),
         .Reg_write(IR_Write),
         .Data_in(inst_code),
@@ -107,7 +107,7 @@ module TOP(rst_, clk, switch, AN, Seg, Led);
         .data_write(W_data),
         .Reg_Write(Reg_Write),
         .rst_(rst_),
-        .clk_W(clk),
+        .clk_W(~clk),
         .A_addr(rs1),
         .B_addr(rs2),
         .W_addr(rd),
@@ -118,14 +118,14 @@ module TOP(rst_, clk, switch, AN, Seg, Led);
     wire [31:0] A,B;
 
     Register RA(
-        .clk(clk),
+        .clk(~clk),
         .rst_(rst_),
         .Data_in(R_Data_A),
         .Reg(A)
     );
     
     Register RB(
-        .clk(clk),
+        .clk(~clk),
         .rst_(rst_),
         .Data_in(R_Data_B),
         .Reg(B)
@@ -151,14 +151,14 @@ module TOP(rst_, clk, switch, AN, Seg, Led);
     // Register RF(clk,rst_,res,F);
     // Register flag_register(clk,rst_,{28'b0,_ZF,_SF,_CF,_OF},{ZF,SF,CF,OF});
     Register RF(
-        .clk(clk),
+        .clk(~clk),
         .rst_(rst_),
         .Data_in(res),
         .Reg(F)
     );
 
     Register flag_register(
-        .clk(clk),
+        .clk(~clk),
         .rst_(rst_),
         .Data_in({28'b0,_ZF,_SF,_CF,_OF}),
         .Reg({ZF,SF,CF,OF})
@@ -185,7 +185,7 @@ module TOP(rst_, clk, switch, AN, Seg, Led);
                         : 32'h0000_0000;
 
     RAM ram (
-        .clk_DM(~clk),
+        .clk_DM(clk),
         .DM_Addr(F),
         .RAM_Write(Mem_write),
         .siz(Size_s),
@@ -195,7 +195,7 @@ module TOP(rst_, clk, switch, AN, Seg, Led);
     );
 
     Register MDR (
-        .clk(clk),
+        .clk(~clk),
         .rst_(rst_),
         .Data_in(RAM_out),
         .Reg(mdr)
