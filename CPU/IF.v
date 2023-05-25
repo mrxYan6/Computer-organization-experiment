@@ -25,7 +25,6 @@ module IF(IR_Write, PC_Write, clk_im, pc, ir, rs1, rs2, rd, opcode, func3, func7
     ROM IM (
         .clka(clk_im),    // input wire clka
         .addra(pc[7:2]),  // input wire [5 : 0] addra
-        // .dina(D_in),    // input wire [31 : 0] dina
         .wea(4'b1111),        // input wire [3 : 0] wea
         .douta(inst_code)  // output wire [31 : 0] douta
     );
