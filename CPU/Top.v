@@ -120,6 +120,7 @@ module TOP(rst_, clk, switch, AN, Seg, Led);
     Register RA(
         .clk(~clk),
         .rst_(rst_),
+        .Reg_write(1),
         .Data_in(R_Data_A),
         .Reg(A)
     );
@@ -127,6 +128,7 @@ module TOP(rst_, clk, switch, AN, Seg, Led);
     Register RB(
         .clk(~clk),
         .rst_(rst_),
+        .Reg_write(1),
         .Data_in(R_Data_B),
         .Reg(B)
     );
@@ -153,6 +155,7 @@ module TOP(rst_, clk, switch, AN, Seg, Led);
     Register RF(
         .clk(~clk),
         .rst_(rst_),
+        .Reg_write(1),
         .Data_in(res),
         .Reg(F)
     );
@@ -160,6 +163,7 @@ module TOP(rst_, clk, switch, AN, Seg, Led);
     Register flag_register(
         .clk(~clk),
         .rst_(rst_),
+        .Reg_write(1),
         .Data_in({28'b0,_ZF,_SF,_CF,_OF}),
         .Reg({ZF,SF,CF,OF})
     );
@@ -197,6 +201,7 @@ module TOP(rst_, clk, switch, AN, Seg, Led);
     Register MDR (
         .clk(~clk),
         .rst_(rst_),
+        .Reg_write(1),
         .Data_in(RAM_out),
         .Reg(mdr)
     );

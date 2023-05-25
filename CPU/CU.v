@@ -125,23 +125,44 @@ module CU(rst_, clk, opcode, func3, func7, CF, OF, ZF, SF, ALU_OP, PC_Write, PC0
                     PC_s <= 2'b00;
                 end
                 4'd2: {PC_Write, PC0_Write, IR_Write,Reg_Write, Mem_write} <= 5'b00000;
-                4'd3: {PC_Write, PC0_Write, IR_Write,Reg_Write, Mem_write} <= 5'b00000;   
+                4'd3: begin
+                    {PC_Write, PC0_Write, IR_Write,Reg_Write, Mem_write} <= 5'b00000;   
+                    rs2_imm_s <= 1'b0;
+                end
                 4'd4: {PC_Write, PC0_Write, IR_Write,Reg_Write, Mem_write} <= 5'b00010;
-                4'd5: {PC_Write, PC0_Write, IR_Write,Reg_Write, Mem_write} <= 5'b00000;
-                4'd6: {PC_Write, PC0_Write, IR_Write,Reg_Write, Mem_write} <= 5'b00010;
-                4'd7: {PC_Write, PC0_Write, IR_Write,Reg_Write, Mem_write} <= 5'b00000;
+                4'd5: begin
+                    {PC_Write, PC0_Write, IR_Write,Reg_Write, Mem_write} <= 5'b00000;
+                    rs2_imm_s <= 1'b1;
+                    w_data_s <= 3'b00;
+                end
+                4'd6: begin
+                    {PC_Write, PC0_Write, IR_Write,Reg_Write, Mem_write} <= 5'b00010;
+                    w_data_s <= 3'b01;
+                end
+                4'd7: begin
+                    {PC_Write, PC0_Write, IR_Write,Reg_Write, Mem_write} <= 5'b00000;
+                    rs2_imm_s <= 2'b1;
+                end
                 4'd8: {PC_Write, PC0_Write, IR_Write,Reg_Write, Mem_write} <= 5'b00000;
-                4'd9: {PC_Write, PC0_Write, IR_Write,Reg_Write, Mem_write} <= 5'b00010;
+                4'd9: begin
+                    {PC_Write, PC0_Write, IR_Write,Reg_Write, Mem_write} <= 5'b00010;
+                    w_data_s <= 3'b10;
+                end
                 4'd10: {PC_Write, PC0_Write, IR_Write,Reg_Write, Mem_write} <= 5'b00001;
                 4'd11: begin
                     {PC_Write, PC0_Write, IR_Write,Reg_Write, Mem_write} <= 5'b10010;
                     PC_s <= 2'b01;
+                    w_data_s <= 3'b11;
                 end
                 4'd12: begin
                     {PC_Write, PC0_Write, IR_Write,Reg_Write, Mem_write} <= 5'b10010;
                     PC_s <= 2'b10;
+                    w_data_s <= 3'b11;
                 end
-                4'd13: {PC_Write, PC0_Write, IR_Write,Reg_Write, Mem_write} <= 5'b00000;
+                4'd13: begin
+                    {PC_Write, PC0_Write, IR_Write,Reg_Write, Mem_write} <= 5'b00000;
+                    rs2_imm_s <= 1'b0;
+                end
                 4'd14: begin
                     {PC_Write, PC0_Write, IR_Write,Reg_Write, Mem_write} <= {cc, 4'b00000};
                     PC_s <= 2'b01;
