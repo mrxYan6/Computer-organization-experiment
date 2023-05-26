@@ -55,7 +55,7 @@ module ID1(inst, rs1, rs2, rd, opcode, fun3, func7, imm);
             //R
             4'd1:imm = 32'b0;
             //I
-            4'd2:imm = (fun3 == 3 || func3 == 1) ? I_shift : I_imm;
+            4'd2:imm = (opcode == 7'bb0010011 && (func3 == 3'b101 || func3 == 3'b001)) ? I_shift : I_imm;
             //U
             4'd3:imm = U_imm;
             //S
