@@ -58,11 +58,11 @@ module RAM(clk_DM,DM_Addr,RAM_Write,siz,SE_s,RAM_in,RAM_out);
     );
 
     RAM_A Data_RAM (
-        .clka(clk_DM),    // input wire clka
-        .addra(DM_Addr[7:2]),  // input wire [5 : 0] addra
-        .dina(D_in),    // input wire [31 : 0] dina
-        .wea(wea),        // input wire [3 : 0] wea
-        .douta(D_out)  // output wire [31 : 0] douta
+        .clka(clk_DM),          // input wire clka
+        .addra(DM_Addr[7:2]),   // input wire [5 : 0] addra
+        .dina(D_in),            // input wire [31 : 0] dina
+        .wea(wea),              // input wire [3 : 0] wea
+        .douta(D_out)           // output wire [31 : 0] douta
     );
 
     SE se(
@@ -71,46 +71,5 @@ module RAM(clk_DM,DM_Addr,RAM_Write,siz,SE_s,RAM_in,RAM_out);
         .D_in(D_out),
         .Ex_out(RAM_out),
         .Low_Addr(DM_Addr[1:0])
-    );
-endmodule
-
-module top(clr,clk_100Mhz,clk_DM,DM_Addr,DM_Write,Data_selector,Seg,AN,siz,SE_s);
-    input clr,clk_100Mhz,clk_DM;
-    input [7:0]DM_Addr;
-    input DM_Write;
-    input [2:0]Data_selector;
-    input [1:0]siz;
-    input SE_s;
-    output [7:0]Seg;
-    output [7:0]AN;
-
-    wire [31:0]DM_in;
-    DataSelector selecotr(
-        .select(Data_selector),
-        .out(DM_in)
-    );
-
-    wire [31:0]RAM_out;
-    reg [31:0] data_show;
-    always @(posedge clk_DM)begin
-        if(!DM_Write) data_show <= RAM_out;
-    end
-    
-    RAM ram(
-        .clk_DM(clk_DM),
-        .DM_Addr(DM_Addr),
-        .RAM_Write(DM_Write),
-        .siz(siz),
-        .SE_s(SE_s),
-        .RAM_in(DM_in),
-        .RAM_out(RAM_out)
-    );
-
-    scan_data tube(
-        .reset(clr),
-        .data(RAM_out),
-        .clk(clk_100Mhz),
-        .AN(AN),
-        .seg(Seg)
     );
 endmodule

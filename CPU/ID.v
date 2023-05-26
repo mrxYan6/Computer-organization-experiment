@@ -21,7 +21,7 @@ module ID1(inst, rs1, rs2, rd, opcode, func3, func7, imm);
     assign S_imm = {{20{inst[31]}}, inst[31:25], inst[11:7]};
     // assign B_imm = {{20{inst[31]}}, inst[7], inst[30:25], inst[11:8],1'b0};
     assign B_imm = {{20{inst[31]}}, inst[7], inst[30:25], inst[11:8], 1'b0};
-    assign U_imm = {inst[31:12],{ 12{0}}};
+    assign U_imm = {inst[31:12],{12'b0}};
     assign J_imm = {{12{inst[31]}}, inst[19:12], inst[20], inst[30:21], 1'b0};
     assign CSR_uimm = {27'b0,inst[19:15]};
 
@@ -55,7 +55,7 @@ module ID1(inst, rs1, rs2, rd, opcode, func3, func7, imm);
             //R
             4'd1:imm = 32'b0;
             //I
-            4'd2:imm = (func3 == 3 || func3 == 1) ? I_shift : I_imm;
+            4'd2:imm = (opcode == 7'bb0010011 && (func3 == 3'b101 || func3 == 3'b001)) ? I_shift : I_imm;
             //U
             4'd3:imm = U_imm;
             //S
@@ -75,7 +75,7 @@ module ID2(opcode, func3, func7, ALU_OP, IS_R, IS_IMM, IS_LUI, IS_S, IS_B, IS_J,
     input [6:0]opcode;
     input [2:0]func3;
     input [6:0]func7;
-    output [6:0]ALU_OP;
+    output reg[6:0]ALU_OP;
     output IS_R, IS_IMM, IS_LUI, IS_S, IS_B, IS_J, IS_CSR, IS_L, IS_AUIPC, IS_JALR;
 
     assign IS_R = (opcode == 7'b0110011);
@@ -91,7 +91,7 @@ module ID2(opcode, func3, func7, ALU_OP, IS_R, IS_IMM, IS_LUI, IS_S, IS_B, IS_J,
 
     always @(*) begin
         if (IS_R) ALU_OP = {func7[5], func3};
-        else if (IS_IMM) ALU_OP = (func3 == 3'b101) ? {func7[5],func3} : {1'b0, func7};
+        else if (IS_IMM) ALU_OP = (func3 == 3'b101) ? {func7[5], func3} : {1'b0, func3};
         else if (IS_J) ALU_OP = 4'b1000;
         else ALU_OP = 4'b0000;
     end

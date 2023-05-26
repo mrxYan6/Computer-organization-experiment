@@ -32,9 +32,7 @@ module ALU(OP,A,B,F,ZF,SF,CF,OF);
             end
             4'b1101: 
             begin
-                F = A;
-                for(i = 0; i < B && i < 32; i = i + 1'b1)
-                    F = {F[31],F[31:1]};
+                F = $signed(A) >>> B;
             end
             default:F=0;
         endcase

@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module IF(IR_Write, PC_Write, clk_im, pc, ir, rs1, rs2, rd, opcode, func3, func7, imm)
+module IF(IR_Write, PC_Write, clk_im, pc, ir, rs1, rs2, rd, opcode, func3, func7, imm);
     input IR_Write, PC_Write, clk_im;
     output [4:0]rs1, rs2, rd;
     output [6:0]opcode;
