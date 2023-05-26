@@ -190,7 +190,7 @@ module TOP(rst_, clk, switch, AN, Seg, Led);
 
     RAM ram (
         .clk_DM(clk),
-        .DM_Addr(F),
+        .DM_Addr({F[5:0],2'b0}),
         .RAM_Write(Mem_write),
         .siz(Size_s),
         .SE_s(SE_s),

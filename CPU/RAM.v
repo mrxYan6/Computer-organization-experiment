@@ -58,11 +58,11 @@ module RAM(clk_DM,DM_Addr,RAM_Write,siz,SE_s,RAM_in,RAM_out);
     );
 
     RAM_A Data_RAM (
-        .clka(clk_DM),    // input wire clka
-        .addra(DM_Addr[7:2]),  // input wire [5 : 0] addra
-        .dina(D_in),    // input wire [31 : 0] dina
-        .wea(wea),        // input wire [3 : 0] wea
-        .douta(D_out)  // output wire [31 : 0] douta
+        .clka(clk_DM),          // input wire clka
+        .addra(DM_Addr[7:2]),   // input wire [5 : 0] addra
+        .dina(D_in),            // input wire [31 : 0] dina
+        .wea(wea),              // input wire [3 : 0] wea
+        .douta(D_out)           // output wire [31 : 0] douta
     );
 
     SE se(
