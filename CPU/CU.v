@@ -77,9 +77,9 @@ module CU(rst_, clk, opcode, func3, func7, CF, OF, ZF, SF, ALU_OP, PC_Write, PC0
         case (st)
             4'd0: next_st = 4'd1;
             4'd1: begin
-                if (IS_IMM || IS_R || IS_L || IS_S || IS_JALR) next_st = 4'd2;                     //I+R
+                if (IS_IMM || IS_R || IS_L || IS_S || IS_JALR || IS_B) next_st = 4'd2;                     //I+R+jal+B+S+L
                 else if (IS_LUI) next_st = 4'd6;                        //lui
-                else if (IS_J) next_st = 4'd1;                          //jal
+                else if (IS_J) next_st = 4'd11;                          //jal
                 else next_st = 4'd15;                                   //auipc
             end
             4'd2: begin

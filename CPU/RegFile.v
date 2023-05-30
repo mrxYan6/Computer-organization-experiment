@@ -13,7 +13,7 @@ module Register_File(data_write,Reg_Write,rst_,clk_W,A_addr,B_addr,W_addr,A_out,
     
     integer i;
     
-    always @(negedge rst_ or negedge clk_W) begin
+    always @(negedge rst_ or posedge clk_W) begin
         if(!rst_)begin                                                                  //初始化
             Reg_Files[0] <= 32'h0000_0000;
             for(i = 1; i < 32; i = i + 1) Reg_Files[i] <= 32'h0000_0001;

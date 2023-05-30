@@ -53,8 +53,15 @@ module TOP(rst_, clk, switch, AN, Seg, Led);
     wire [31:0]imm;
 
     wire [31:0] pc_in;
-
-    assign pc_in = (PC_s == 0) ? pc + 4 : (PC_s == 1) ? pc0 + imm : 32'h0000_0000;
+    wire [31:0]inst_code;
+    wire [31:0]W_data, R_Data_A, R_Data_B;
+    wire [31:0] A,B;
+    wire [31:0] ALU_B;
+    assign ALU_B = rs2_imm_s ? imm : B;     
+    wire [31:0] res;
+    wire _ZF, _SF, _CF, _OF;
+    wire [31:0] F;
+    assign pc_in = (PC_s == 0) ? pc + 4 : (PC_s == 1) ? pc0 + imm : (PC_s == 2) ? F :  32'h0000_0000;
 
     Register PC(
         .clk(~clk),
@@ -72,8 +79,7 @@ module TOP(rst_, clk, switch, AN, Seg, Led);
         .Reg(pc0)
     );
 
-    wire [31:0]inst_code;
-
+    
     ROM IM (
         .clka(clk),    // input wire clka
         .addra(pc[7:2]),  // input wire [5 : 0] addra
@@ -102,7 +108,7 @@ module TOP(rst_, clk, switch, AN, Seg, Led);
 
     //regfile + alu
 
-    wire [31:0]W_data, R_Data_A, R_Data_B;
+    
     Register_File reg_files(
         .data_write(W_data),
         .Reg_Write(Reg_Write),
@@ -115,8 +121,7 @@ module TOP(rst_, clk, switch, AN, Seg, Led);
         .B_out(R_Data_B)
     );
 
-    wire [31:0] A,B;
-
+    
     Register RA(
         .clk(~clk),
         .rst_(rst_),
@@ -132,12 +137,7 @@ module TOP(rst_, clk, switch, AN, Seg, Led);
         .Data_in(R_Data_B),
         .Reg(B)
     );
-    wire [31:0] ALU_B;
-    assign ALU_B = rs2_imm_s ? imm : B; 
     
-    wire [31:0] res;
-    wire _ZF, _SF, _CF, _OF;
-    wire [31:0] F;
 
     ALU alu(
         .OP(ALU_OP),
