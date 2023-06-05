@@ -1,16 +1,55 @@
 `timescale 1ns / 1ps
 
-// IF(IR_Write, PC_Write, clk_im, pc, ir, rs1, rs2, rd, opcode, func3, func7, imm)
 module TOP(rst_, clk, switch, AN, Seg, Led);
     input rst_, clk;
-    input [2:0]switch;
+    input [1:0]switch;
     output [7:0]AN;
     output [7:0]Seg;
-    output reg [16:0]Led;
+    output reg [3:0]Led;
 
+    wire [31:0] pc, ir, mdr, W_data;
+    wire ZF, SF, CF, OF;
     
+    CPU cpu(
+        .rst_(rst_),
+        .clk(clk),
+        .mdr(mdr),
+        .ir(ir),
+        .W_data(W_data),
+        .ZF(ZF),
+        .SF(SF),
+        .CF(CF),
+        .OF(OF)
+    );
 
-    wire CF, OF, ZF, SF;
+    assign Led = {ZF, SF, CF, OF};
+
+    wire [31:0] data_out;
+    always @(*) begin
+        case (switch)
+            2'b00: data_out = pc;
+            2'b01: data_out = ir;
+            2'b10: data_out = mdr;
+            2'b11: data_out = W_data;
+        endcase
+    end
+
+    scan_data scan_data(
+        .reset(rst_),
+        .data(data_out),
+        .clk(clk),
+        .AN(AN),
+        .seg(Seg)
+    );
+
+endmodule
+
+
+// IF(IR_Write, PC_Write, clk_im, pc, ir, rs1, rs2, rd, opcode, func3, func7, imm)
+module CPU(rst_, clk, mdr, ir, W_data, ZF, SF, CF, OF);
+    input rst_, clk;
+
+    output wire CF, OF, ZF, SF;
     wire [3:0] ALU_OP;
     wire PC_Write, PC0_Write, IR_Write, Reg_Write, Mem_write;
     wire SE_s;
@@ -47,14 +86,15 @@ module TOP(rst_, clk, switch, AN, Seg, Led);
 
 
     wire [31:0]pc, pc0;
-    wire [31:0]ir;
+    output [31:0]ir;
     wire [4:0]rs1, rs2, rd;
 
     wire [31:0]imm;
 
     wire [31:0] pc_in;
     wire [31:0]inst_code;
-    wire [31:0]W_data, R_Data_A, R_Data_B;
+    output wire [31:0]W_data;
+    wire [31:0] R_Data_A, R_Data_B;
     wire [31:0] A,B;
     wire [31:0] ALU_B;
     assign ALU_B = rs2_imm_s ? imm : B;     
@@ -107,8 +147,6 @@ module TOP(rst_, clk, switch, AN, Seg, Led);
     );
 
     //regfile + alu
-
-    
     Register_File reg_files(
         .data_write(W_data),
         .Reg_Write(Reg_Write),
@@ -179,7 +217,7 @@ module TOP(rst_, clk, switch, AN, Seg, Led);
     // input RAM_Write;
 
     wire [31:0]RAM_out;
-    wire [31:0] mdr;
+    output wire [31:0] mdr;
 
     assign W_data =   (w_data_s == 0) ? F :
                         (w_data_s == 1) ? imm :
