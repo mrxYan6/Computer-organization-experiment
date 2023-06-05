@@ -169,7 +169,10 @@ module CU(rst_, clk, opcode, func3, func7, CF, OF, ZF, SF, ALU_OP, PC_Write, PC0
                     {PC_Write, PC0_Write, IR_Write,Reg_Write, Mem_write} <= {cc, 4'b00000};
                     PC_s <= 2'b01;
                 end
-                4'd15: {PC_Write, PC0_Write, IR_Write,Reg_Write, Mem_write} <= 5'b00000;
+                4'd15: begin
+                    {PC_Write, PC0_Write, IR_Write,Reg_Write, Mem_write} <= 5'b00010;
+                    w_data_s <= 3'b100;
+                end
                 default: {PC_Write, PC0_Write, IR_Write,Reg_Write, Mem_write} <= 5'b0;
             endcase
         end

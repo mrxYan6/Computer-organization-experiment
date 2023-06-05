@@ -92,7 +92,7 @@ module ID2(opcode, func3, func7, ALU_OP, IS_R, IS_IMM, IS_LUI, IS_S, IS_B, IS_J,
     always @(*) begin
         if (IS_R) ALU_OP = {func7[5], func3};
         else if (IS_IMM) ALU_OP = (func3 == 3'b101) ? {func7[5], func3} : {1'b0, func3};
-        else if (IS_J) ALU_OP = 4'b1000;
+        else if (IS_B) ALU_OP = 4'b1000;
         else ALU_OP = 4'b0000;
     end
 

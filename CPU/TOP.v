@@ -82,7 +82,7 @@ module TOP(rst_, clk, switch, AN, Seg, Led);
     
     ROM IM (
         .clka(clk),    // input wire clka
-        .addra(pc[7:2]),  // input wire [5 : 0] addra
+        .addra(pc[8:2]),  // input wire [6 : 0] addra
         .douta(inst_code)  // output wire [31 : 0] douta
     );
 
