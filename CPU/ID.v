@@ -19,7 +19,6 @@ module ID1(inst, rs1, rs2, rd, opcode, func3, func7, imm);
     assign I_shift = {27'b0, inst[24:20]};
     assign I_imm = {{20{inst[31]}}, inst[31:20]};
     assign S_imm = {{20{inst[31]}}, inst[31:25], inst[11:7]};
-    // assign B_imm = {{20{inst[31]}}, inst[7], inst[30:25], inst[11:8],1'b0};
     assign B_imm = {{20{inst[31]}}, inst[7], inst[30:25], inst[11:8], 1'b0};
     assign U_imm = {inst[31:12],{12'b0}};
     assign J_imm = {{12{inst[31]}}, inst[19:12], inst[20], inst[30:21], 1'b0};

@@ -14,9 +14,7 @@ module CU(rst_, clk, opcode, func3, func7, CF, OF, ZF, SF, ALU_OP, PC_Write, PC0
     output reg rs2_imm_s;             // 0: rs2, 1: imm
     output reg [2:0] w_data_s;        // 0: F, 1: imm, 2: MDR, 3: PC, 4: PC0 + imm
 
-
     wire IS_R, IS_IMM, IS_LUI, IS_S, IS_B, IS_J,IS_L, IS_AUIPC, IS_JALR;
-// ID2(opcode, func3, func7, ALU_OP, IS_R, IS_IMM, IS_LUI, IS_S, IS_B, IS_J, IS_CSR, IS_L, IS_AUIPC, IS_JALR);
 
     ID2 id2(
         .opcode(opcode),

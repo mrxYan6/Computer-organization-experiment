@@ -36,7 +36,5 @@ module ALU(OP,A,B,F,ZF,SF,CF,OF);
             end
             default:F=0;
         endcase
-
     end
-
 endmodule

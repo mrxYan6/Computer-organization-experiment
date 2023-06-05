@@ -44,8 +44,6 @@ module TOP(rst_, clk, switch, AN, Seg, Led);
 
 endmodule
 
-
-// IF(IR_Write, PC_Write, clk_im, pc, ir, rs1, rs2, rd, opcode, func3, func7, imm)
 module CPU(rst_, clk, mdr, ir, W_data, ZF, SF, CF, OF);
     input rst_, clk;
 
@@ -158,7 +156,6 @@ module CPU(rst_, clk, mdr, ir, W_data, ZF, SF, CF, OF);
         .A_out(R_Data_A),
         .B_out(R_Data_B)
     );
-
     
     Register RA(
         .clk(~clk),
@@ -176,7 +173,6 @@ module CPU(rst_, clk, mdr, ir, W_data, ZF, SF, CF, OF);
         .Reg(B)
     );
     
-
     ALU alu(
         .OP(ALU_OP),
         .A(A),
@@ -188,8 +184,6 @@ module CPU(rst_, clk, mdr, ir, W_data, ZF, SF, CF, OF);
         .OF(_OF)
     );
 
-    // Register RF(clk,rst_,res,F);
-    // Register flag_register(clk,rst_,{28'b0,_ZF,_SF,_CF,_OF},{ZF,SF,CF,OF});
     Register RF(
         .clk(~clk),
         .rst_(rst_),
@@ -205,16 +199,6 @@ module CPU(rst_, clk, mdr, ir, W_data, ZF, SF, CF, OF);
         .Data_in({28'b0,_ZF,_SF,_CF,_OF}),
         .Reg({ZF,SF,CF,OF})
     );
-
-
-    //module RAM(clk_DM,DM_Addr,RAM_Write,siz,SE_s,RAM_in,RAM_out);
-    // input clk_DM;
-    // input [7:0]DM_Addr;
-    // input [1:0]siz;
-    // input SE_s;
-    // input [31:0]RAM_in;
-    // output [31:0]RAM_out;                
-    // input RAM_Write;
 
     wire [31:0]RAM_out;
     output wire [31:0] mdr;

@@ -1,4 +1,5 @@
 `timescale 1ns / 1ps
+
 module Register(clk,rst_,Reg_write,Data_in,Reg);
     input clk,rst_,Reg_write;
     input [31:0]Data_in;
