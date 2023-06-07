@@ -19,7 +19,6 @@ module ID1(inst, rs1, rs2, rd, opcode, func3, func7, imm);
     assign I_shift = {27'b0, inst[24:20]};
     assign I_imm = {{20{inst[31]}}, inst[31:20]};
     assign S_imm = {{20{inst[31]}}, inst[31:25], inst[11:7]};
-    // assign B_imm = {{20{inst[31]}}, inst[7], inst[30:25], inst[11:8],1'b0};
     assign B_imm = {{20{inst[31]}}, inst[7], inst[30:25], inst[11:8], 1'b0};
     assign U_imm = {inst[31:12],{12'b0}};
     assign J_imm = {{12{inst[31]}}, inst[19:12], inst[20], inst[30:21], 1'b0};
@@ -92,7 +91,7 @@ module ID2(opcode, func3, func7, ALU_OP, IS_R, IS_IMM, IS_LUI, IS_S, IS_B, IS_J,
     always @(*) begin
         if (IS_R) ALU_OP = {func7[5], func3};
         else if (IS_IMM) ALU_OP = (func3 == 3'b101) ? {func7[5], func3} : {1'b0, func3};
-        else if (IS_J) ALU_OP = 4'b1000;
+        else if (IS_B) ALU_OP = 4'b1000;
         else ALU_OP = 4'b0000;
     end
 

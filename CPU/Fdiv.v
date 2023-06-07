@@ -1,4 +1,5 @@
 `timescale 1ns / 1ps
+
 module Fdiv(input reset,input[31:0] mult,input clk_1M,output reg clk_1K);
     reg [31:0]counter;
     initial begin counter = 32'd0;end

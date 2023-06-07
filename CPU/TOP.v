@@ -1,16 +1,53 @@
 `timescale 1ns / 1ps
 
-// IF(IR_Write, PC_Write, clk_im, pc, ir, rs1, rs2, rd, opcode, func3, func7, imm)
-module TOP(rst_, clk, switch, AN, Seg, Led);
-    input rst_, clk;
-    input [2:0]switch;
+module TOP(rst_, clk, clk_100m, switch, AN, Seg, Led);
+    input rst_, clk, clk_100m;
+    input [1:0]switch;
     output [7:0]AN;
     output [7:0]Seg;
-    output reg [16:0]Led;
+    output [3:0]Led;
 
+    wire [31:0] pc, ir, mdr, W_data;
+    wire ZF, SF, CF, OF;
     
+    CPU cpu(
+        .rst_(rst_),
+        .clk(clk),
+        .mdr(mdr),
+        .ir(ir),
+        .W_data(W_data),
+        .ZF(ZF),
+        .SF(SF),
+        .CF(CF),
+        .OF(OF)
+    );
 
-    wire CF, OF, ZF, SF;
+    assign Led = {ZF, SF, CF, OF};
+
+    reg [31:0] data_out;
+    always @(*) begin
+        case (switch)
+            2'b00: data_out = pc;
+            2'b01: data_out = ir;
+            2'b10: data_out = mdr;
+            2'b11: data_out = W_data;
+        endcase
+    end
+
+    scan_data scan_data(
+        .reset(rst_),
+        .data(data_out),
+        .clk(clk_100m),
+        .AN(AN),
+        .seg(Seg)
+    );
+
+endmodule
+
+module CPU(rst_, clk, mdr, ir, W_data, ZF, SF, CF, OF);
+    input rst_, clk;
+
+    output wire CF, OF, ZF, SF;
     wire [3:0] ALU_OP;
     wire PC_Write, PC0_Write, IR_Write, Reg_Write, Mem_write;
     wire SE_s;
@@ -47,14 +84,22 @@ module TOP(rst_, clk, switch, AN, Seg, Led);
 
 
     wire [31:0]pc, pc0;
-    wire [31:0]ir;
+    output [31:0]ir;
     wire [4:0]rs1, rs2, rd;
 
     wire [31:0]imm;
 
     wire [31:0] pc_in;
-
-    assign pc_in = (PC_s == 0) ? pc + 4 : (PC_s == 1) ? pc0 + imm : 32'h0000_0000;
+    wire [31:0]inst_code;
+    output wire [31:0]W_data;
+    wire [31:0] R_Data_A, R_Data_B;
+    wire [31:0] A,B;
+    wire [31:0] ALU_B;
+    assign ALU_B = rs2_imm_s ? imm : B;     
+    wire [31:0] res;
+    wire _ZF, _SF, _CF, _OF;
+    wire [31:0] F;
+    assign pc_in = (PC_s == 0) ? pc + 4 : (PC_s == 1) ? pc0 + imm : (PC_s == 2) ? F :  32'h0000_0000;
 
     Register PC(
         .clk(~clk),
@@ -72,11 +117,10 @@ module TOP(rst_, clk, switch, AN, Seg, Led);
         .Reg(pc0)
     );
 
-    wire [31:0]inst_code;
-
+    
     ROM IM (
         .clka(clk),    // input wire clka
-        .addra(pc[7:2]),  // input wire [5 : 0] addra
+        .addra(pc[8:2]),  // input wire [6 : 0] addra
         .douta(inst_code)  // output wire [31 : 0] douta
     );
 
@@ -101,8 +145,6 @@ module TOP(rst_, clk, switch, AN, Seg, Led);
     );
 
     //regfile + alu
-
-    wire [31:0]W_data, R_Data_A, R_Data_B;
     Register_File reg_files(
         .data_write(W_data),
         .Reg_Write(Reg_Write),
@@ -114,9 +156,7 @@ module TOP(rst_, clk, switch, AN, Seg, Led);
         .A_out(R_Data_A),
         .B_out(R_Data_B)
     );
-
-    wire [31:0] A,B;
-
+    
     Register RA(
         .clk(~clk),
         .rst_(rst_),
@@ -132,13 +172,7 @@ module TOP(rst_, clk, switch, AN, Seg, Led);
         .Data_in(R_Data_B),
         .Reg(B)
     );
-    wire [31:0] ALU_B;
-    assign ALU_B = rs2_imm_s ? imm : B; 
     
-    wire [31:0] res;
-    wire _ZF, _SF, _CF, _OF;
-    wire [31:0] F;
-
     ALU alu(
         .OP(ALU_OP),
         .A(A),
@@ -150,8 +184,6 @@ module TOP(rst_, clk, switch, AN, Seg, Led);
         .OF(_OF)
     );
 
-    // Register RF(clk,rst_,res,F);
-    // Register flag_register(clk,rst_,{28'b0,_ZF,_SF,_CF,_OF},{ZF,SF,CF,OF});
     Register RF(
         .clk(~clk),
         .rst_(rst_),
@@ -168,18 +200,8 @@ module TOP(rst_, clk, switch, AN, Seg, Led);
         .Reg({ZF,SF,CF,OF})
     );
 
-
-    //module RAM(clk_DM,DM_Addr,RAM_Write,siz,SE_s,RAM_in,RAM_out);
-    // input clk_DM;
-    // input [7:0]DM_Addr;
-    // input [1:0]siz;
-    // input SE_s;
-    // input [31:0]RAM_in;
-    // output [31:0]RAM_out;                
-    // input RAM_Write;
-
     wire [31:0]RAM_out;
-    wire [31:0] mdr;
+    output wire [31:0] mdr;
 
     assign W_data =   (w_data_s == 0) ? F :
                         (w_data_s == 1) ? imm :
