@@ -1,11 +1,11 @@
 `timescale 1ns / 1ps
 
-module TOP(rst_, clk, switch, AN, Seg, Led);
-    input rst_, clk;
+module TOP(rst_, clk, clk_100m, switch, AN, Seg, Led);
+    input rst_, clk, clk_100m;
     input [1:0]switch;
     output [7:0]AN;
     output [7:0]Seg;
-    output reg [3:0]Led;
+    output [3:0]Led;
 
     wire [31:0] pc, ir, mdr, W_data;
     wire ZF, SF, CF, OF;
@@ -24,7 +24,7 @@ module TOP(rst_, clk, switch, AN, Seg, Led);
 
     assign Led = {ZF, SF, CF, OF};
 
-    wire [31:0] data_out;
+    reg [31:0] data_out;
     always @(*) begin
         case (switch)
             2'b00: data_out = pc;
@@ -37,7 +37,7 @@ module TOP(rst_, clk, switch, AN, Seg, Led);
     scan_data scan_data(
         .reset(rst_),
         .data(data_out),
-        .clk(clk),
+        .clk(clk_100m),
         .AN(AN),
         .seg(Seg)
     );
