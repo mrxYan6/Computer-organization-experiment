@@ -1,56 +1,20 @@
-main:
-	addi		x31,x0,16				#x31=16
-	lw		x26,0(x31) 			#x26=DMem[16]
-	lw		x27,4(x31) 			#x27=DMem[20]
-	sw		x27,0(x31)				# DMem[16]=x27
-	sw		x26,4(x31)				# DMem[20]=x26
-	lw		x26,0(x31) 			#x26=DMem[16]
-	lw		x27,4(x31) 			#x27=DMem[20]
-	add		x28,x26,x27			#x28= x26+ x27
-	sw		x28,16(x0)				# DMem[16]=x28
-	lw		x29,16(x0)				#x29=DMem[16]
-	addi		x1,x0,-0x78A			#x1=0xFFFF_F876
-	addi		x2,x0,4					#x2=0x0000_0004
-	add		x3,x1,x2				#x3=0xFFFF_F87A
-	sub		x4,x1,x2				#x4=0xFFFF_F872
-	sll		x5,x1,x2				#x5=0xFFFF_8760
-	srl		x6,x1,x2				#x6=0x0FFF_FF87
-	sra		x7,x1,x2				#x7=0xFFFF_FF87
-	slt		x8,x1,x2				#x8=0x0000_0001
-	sltu		x9,x1,x2				#x9=0x0000_0000
-	and		x10,x5,x6				#x10=0x0FFF_8700
-	or		x11,x5,x6				#x11=0xFFFF_FFE7
-	xor		x12,x5,x6				#x12=0xF000_78E7
-	lui		x13,0x80000			#x13=0x8000_0000
-	addi		x14,x13,-1				#x14=0x7FFF_FFFF
-	addi		x15,x14,0x123			#x15=0x8000_0122
-	slli		x16,x15,3				#x16=0x0000_0910
-	srli		x17,x15,3				#x17=0x1000_0024
-	srai		x18,x15,3				#x18=0xF000_0024
-	slti		x19,x18,-1				#x19=0x0000_0001
-	sltiu		x20,x18,-1				#x20=0x0000_0001
-	slti		x21,x18,1				#x21=0x0000_0001
-	sltiu		x22,x18,1				#x22=0x0000_0000
-	andi		x23,x12,0xFF			#x23=0x0000_00E7
-	ori		x23,x12,0xFF			#x23=0xF000_78FF
-	lui		x24,0x00010			#x24=0x0001_0000
-	addi		x24,x24,-1				#x24=0x0000_FFFF
-	xori		x25,x24,-1				#x25=0xFFFF_0000
 .text
 
-
 main:
-add     x3,x1,x2
-sll     x4,x1,x2
-slli    x5,x2,0x12
-addi    x6,x1,-0x64
-addi    x6,x1,0x52
-lw      x2,0x78(x0)
-sw      x2,0x64(x0)
-lui     x2,0x34422
-bne     x2, x3, -0x32
-blt     x3, x4, -0x64
-jalr    x0, x0, 0x2
-jal     x7, 0x73262
-
-
+		addi		a0,	zero,	0x10 		#a0=0000_0010H，数据区域（数组）首址
+		ori			a1,	zero,	3 			#a1=0000_0003H，累加的数据个数
+		xori		a2,	zero,	0x30 		#a2=0000_0030H，累加和存放的单元
+		jal			BankSum					#子程序调用
+		lw			s0,	0(a2)				#读出累加和
+BankSum:
+		add			t0,	a0,	zero  			#t0=数据区域首址
+		or			t1,	a1,	zero 			#t1=计数器，初始为累加的数据个数
+		and			t2,	zero,	zero 		#t2=累加和，初始清零
+L:	lw				t3,	0(t0) 				#t3=取出数据
+		add			t2,	t2,	t3				#累加
+		addi		t0,	t0,	4 				#移动数据区指针
+		addi		t1,	t1,	-1 				#计数器-1
+		beq			t1, 	zero,	exit 	#计数值=0，累加完成，退出循环
+		j			L						#计数值≠0，继续累加，跳转至循环体首部
+exit:	sw			t2,	0(a2)  				#累加和，存到指定单元
+		jr			ra						#子程序返回
