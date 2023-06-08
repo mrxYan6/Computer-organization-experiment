@@ -35,7 +35,7 @@ module SE(siz,SE,Low_Addr,D_in,Ex_out);
                 :   cur;
 endmodule
 
-module RAM(clk_DM,DM_Addr,RAM_Write,siz,SE_s,RAM_in,RAM_out);
+module RAM(clk_DM,DM_Addr,RAM_Write,siz,SE_s,RAM_in,RAM_out,D_out,D_in,wea);
     input clk_DM;
     input [7:0]DM_Addr;
     input [1:0]siz;
@@ -44,9 +44,9 @@ module RAM(clk_DM,DM_Addr,RAM_Write,siz,SE_s,RAM_in,RAM_out);
     output [31:0]RAM_out;                
     input RAM_Write;
 
-    wire [3:0]wea;    
-    wire [31:0]D_in;
-    wire [31:0]D_out;
+    output [3:0]wea;    
+    output [31:0]D_in;
+    output [31:0]D_out;
 
     W_Process read_process(
         .siz(siz),

@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 
-module CU(rst_, clk, opcode, func3, func7, CF, OF, ZF, SF, ALU_OP, PC_Write, PC0_Write, IR_Write, Reg_Write, Mem_write, SE_s, Size_s, PC_s, rs2_imm_s, w_data_s);
+module CU(rst_, clk, opcode, func3, func7, CF, OF, ZF, SF, ALU_OP, PC_Write, PC0_Write, IR_Write, Reg_Write, Mem_write, SE_s, Size_s, PC_s, rs2_imm_s, w_data_s, st);
     input rst_, clk;
     input [6:0] opcode;
     input [2:0] func3;
@@ -8,8 +8,8 @@ module CU(rst_, clk, opcode, func3, func7, CF, OF, ZF, SF, ALU_OP, PC_Write, PC0
     input CF, OF, ZF, SF;
     output [3:0] ALU_OP;
     output reg PC_Write, PC0_Write, IR_Write, Reg_Write, Mem_write;
-    output reg SE_s;
-    output reg [1:0] Size_s;
+    output SE_s;
+    output [1:0] Size_s;
     output reg [1:0] PC_s;            // 0: PC + 4, 1: PC0 + imm, 2: F
     output reg rs2_imm_s;             // 0: rs2, 1: imm
     output reg [2:0] w_data_s;        // 0: F, 1: imm, 2: MDR, 3: PC, 4: PC0 + imm
@@ -30,7 +30,9 @@ module CU(rst_, clk, opcode, func3, func7, CF, OF, ZF, SF, ALU_OP, PC_Write, PC0
         .IS_L(IS_L),
         .IS_AUIPC(IS_AUIPC),
         .IS_JALR(IS_JALR),
-        .ALU_OP(ALU_OP)
+        .ALU_OP(ALU_OP),
+        .Size_s(Size_s),
+        .SE_s(SE_s)
     );
 
     reg cc;
@@ -50,20 +52,9 @@ module CU(rst_, clk, opcode, func3, func7, CF, OF, ZF, SF, ALU_OP, PC_Write, PC0
         else cc = 1'b0;
     end
 
-    // generate Size_s, SE_s
-    always@(*) begin
-        if (IS_L || IS_S) begin
-            Size_s = func3[1:0];
-            SE_s = func3[2];
-        end else begin
-            Size_s = 2'b00;
-            SE_s = 1'b0;
-        end
-    end
-
-
     // status update
-    reg [3:0] st, next_st;
+    output reg [3:0] st;
+    reg [3:0] next_st;
     always @(posedge clk or negedge rst_) begin
         if (!rst_) st <= 4'd0;
         else st <= next_st;
@@ -111,8 +102,6 @@ module CU(rst_, clk, opcode, func3, func7, CF, OF, ZF, SF, ALU_OP, PC_Write, PC0
     always @(posedge clk or negedge rst_) begin
         if(!rst_) begin
             {PC_Write, PC0_Write, IR_Write,Reg_Write, Mem_write} <= 5'b0;
-            SE_s <= 1'b0;
-            Size_s <= 2'b0;
             PC_s <= 2'b0;
             rs2_imm_s <= 1'b0;
             w_data_s <= 3'b0;

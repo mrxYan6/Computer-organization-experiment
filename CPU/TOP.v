@@ -1,36 +1,48 @@
 `timescale 1ns / 1ps
 
-module TOP(rst_, clk, clk_100m, switch, AN, Seg, Led);
+module TOP(rst_, clk, clk_100m, switch, AN, Seg, Led, wea);
     input rst_, clk, clk_100m;
-    input [1:0]switch;
+    input [2:0]switch;
+    output [3:0]wea;
     output [7:0]AN;
     output [7:0]Seg;
-    output [3:0]Led;
+    output [5:0]Led;
 
-    wire [31:0] pc, ir, mdr, W_data;
+    wire [31:0] pc, ir, mdr, W_data, F, RAM_out, D_in, D_out;
     wire ZF, SF, CF, OF;
-    
+    wire [1:0] siz;
     CPU cpu(
         .rst_(rst_),
-        .clk(clk),
+        .clk(~clk),
         .mdr(mdr),
         .ir(ir),
+        .pc(pc),
         .W_data(W_data),
         .ZF(ZF),
         .SF(SF),
         .CF(CF),
-        .OF(OF)
+        .OF(OF),
+        .F(F),
+        .RAM_out(RAM_out),
+        .wea(wea),
+        .D_in(D_in),
+        .D_out(D_out),
+        .Size_s(siz)
     );
 
-    assign Led = {ZF, SF, CF, OF};
+    assign Led [5:0] = {ZF, SF, CF, OF, siz};
 
     reg [31:0] data_out;
     always @(*) begin
         case (switch)
-            2'b00: data_out = pc;
-            2'b01: data_out = ir;
-            2'b10: data_out = mdr;
-            2'b11: data_out = W_data;
+            3'b000: data_out = pc;
+            3'b001: data_out = ir;
+            3'b010: data_out = mdr;
+            3'b011: data_out = W_data;
+            3'b100: data_out = F;
+            3'b101: data_out = RAM_out;
+            3'b110: data_out = D_in;
+            3'b111: data_out = D_out;
         endcase
     end
 
@@ -44,14 +56,14 @@ module TOP(rst_, clk, clk_100m, switch, AN, Seg, Led);
 
 endmodule
 
-module CPU(rst_, clk, mdr, ir, W_data, ZF, SF, CF, OF);
+module CPU(rst_, clk, pc, mdr, ir, W_data, ZF, SF, CF, OF, F, RAM_out, wea, D_in, D_out, Size_s);
     input rst_, clk;
 
     output wire CF, OF, ZF, SF;
     wire [3:0] ALU_OP;
     wire PC_Write, PC0_Write, IR_Write, Reg_Write, Mem_write;
     wire SE_s;
-    wire [1:0] Size_s;
+    output [1:0] Size_s;
     wire [1:0] PC_s;            // 0: PC + 4, 1: PC0 + imm, 2: F
     wire rs2_imm_s;             // 0: rs2, 1: imm
     wire [2:0] w_data_s;        // 0: F, 1: imm, 2: MDR, 3: PC, 4: PC0 + imm 
@@ -79,11 +91,13 @@ module CPU(rst_, clk, mdr, ir, W_data, ZF, SF, CF, OF);
         .Size_s(Size_s),
         .PC_s(PC_s),
         .rs2_imm_s(rs2_imm_s),
-        .w_data_s(w_data_s)
+        .w_data_s(w_data_s),
+        .st(wea)
     );
 
 
-    wire [31:0]pc, pc0;
+    output [31:0]pc;
+    wire [31:0]pc0;
     output [31:0]ir;
     wire [4:0]rs1, rs2, rd;
 
@@ -98,7 +112,7 @@ module CPU(rst_, clk, mdr, ir, W_data, ZF, SF, CF, OF);
     assign ALU_B = rs2_imm_s ? imm : B;     
     wire [31:0] res;
     wire _ZF, _SF, _CF, _OF;
-    wire [31:0] F;
+    output [31:0] F;
     assign pc_in = (PC_s == 0) ? pc + 4 : (PC_s == 1) ? pc0 + imm : (PC_s == 2) ? F :  32'h0000_0000;
 
     Register PC(
@@ -200,7 +214,7 @@ module CPU(rst_, clk, mdr, ir, W_data, ZF, SF, CF, OF);
         .Reg({ZF,SF,CF,OF})
     );
 
-    wire [31:0]RAM_out;
+    output [31:0]RAM_out;
     output wire [31:0] mdr;
 
     assign W_data =   (w_data_s == 0) ? F :
@@ -210,6 +224,9 @@ module CPU(rst_, clk, mdr, ir, W_data, ZF, SF, CF, OF);
                         (w_data_s == 4) ? pc0 + imm
                         : 32'h0000_0000;
 
+    output [3:0] wea;
+
+    output [31:0] D_out, D_in;
     RAM ram (
         .clk_DM(clk),
         .DM_Addr({F[5:0],2'b0}),
@@ -217,7 +234,9 @@ module CPU(rst_, clk, mdr, ir, W_data, ZF, SF, CF, OF);
         .siz(Size_s),
         .SE_s(SE_s),
         .RAM_in(B),
-        .RAM_out(RAM_out)
+        .RAM_out(RAM_out),
+        .D_in(D_in),
+        .D_out(D_out)
     );
 
     Register MDR (

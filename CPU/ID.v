@@ -70,7 +70,7 @@ module ID1(inst, rs1, rs2, rd, opcode, func3, func7, imm);
     end
 endmodule
 
-module ID2(opcode, func3, func7, ALU_OP, IS_R, IS_IMM, IS_LUI, IS_S, IS_B, IS_J, IS_CSR, IS_L, IS_AUIPC, IS_JALR);
+module ID2(opcode, func3, func7, ALU_OP, IS_R, IS_IMM, IS_LUI, IS_S, IS_B, IS_J, IS_CSR, IS_L, IS_AUIPC, IS_JALR, Size_s, SE_s);
     input [6:0]opcode;
     input [2:0]func3;
     input [6:0]func7;
@@ -95,6 +95,19 @@ module ID2(opcode, func3, func7, ALU_OP, IS_R, IS_IMM, IS_LUI, IS_S, IS_B, IS_J,
         else ALU_OP = 4'b0000;
     end
 
+    output reg [1:0]Size_s;
+    output reg SE_s;
+
+    // generate Size_s, SE_s
+    always@(*) begin
+        if (IS_L || IS_S) begin
+            Size_s = func3[1:0];
+            SE_s = ~func3[2];
+        end else begin
+            Size_s = 2'b00;
+            SE_s = 1'b0;
+        end
+    end
     
 
 endmodule
